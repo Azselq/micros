@@ -30,15 +30,12 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Dependency to get the database session
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-# Create a patient endpoint
 @app.post("/patients/", response_model=PatientSchema)
 def create_patient(patient: PatientSchema, db: Session = Depends(get_db)):
     db_patient = Patient(name=patient.name, age=patient.age)
@@ -46,14 +43,11 @@ def create_patient(patient: PatientSchema, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_patient)
     return db_patient
-
-# Read patients endpoint    
+ 
 @app.get("/patients/", response_model=List[PatientSchema])
 def read_patients(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     patients = db.query(Patient).offset(skip).limit(limit).all()
     return patients
-
-# Read a single patient endpoint
 @app.get("/patients/{patient_id}", response_model=PatientSchema)
 def read_patient(patient_id: int, db: Session = Depends(get_db)):
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
