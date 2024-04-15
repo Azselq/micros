@@ -9,9 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build docker image
-        run: docker build ./appointments_service --file ./appointments_service/Dockerfile --tag cr.yandex/${{ secrets.YC_REGISTRY_ID }}/appointments-service:latest
-      - name: Login to YC Registry
-        uses: docker/login-action@v3.0.0
+        run: docker build ./appointments_service --file ./appointments_service/Dockerfile --tag cr.yandex/${{ secrets.YC_REGISTRY_ID }}/appointments_service:latest
         with:
           registry: cr.yandex
           username: json_key
