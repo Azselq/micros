@@ -18,6 +18,6 @@ def create_appointment(patient_id: int, appointment_date: date):
     appointments.append(appointment)
     return appointment
 
-@app.get("/appointments/")
+@app.get("/")
 def get_appointments():
     return appointments
