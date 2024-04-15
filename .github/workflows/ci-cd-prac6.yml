@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build Docker image
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+        run: docker build . --file dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
       - name: Log in to DockerHub
         uses: docker/login-action@v3.0.0
         with:
