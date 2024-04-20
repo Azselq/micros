@@ -27,7 +27,7 @@ jobs:
         env:
           DATABASE_URL: "postgresql://micros_user:1987@db/micros_database"
         run: |
-          pytest ./patients_service/
+          pytest ./appointments_service/
 
   build-and-push:
     needs: [test]
