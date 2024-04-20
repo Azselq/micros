@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     services:
-      postgres:
+      db:
         image: postgres:latest
         env:
           POSTGRES_USER: micros_user
