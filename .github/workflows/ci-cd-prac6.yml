@@ -33,6 +33,9 @@ jobs:
           docker build ./patients_service --file ./patients_service/Dockerfile --tag back-tests
           docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:12
           sleep 5
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install -r ./patients_service/requirements.txt
           docker run -p 8000:80 -e POSTGRES_URL=postgresql://micros_user:1987@localhost:5432/micros_database -d back-tests
 
       - name: Run e2e tests
