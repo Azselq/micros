@@ -10,6 +10,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: micros_user
+          POSTGRES_PASSWORD: 1987
+          POSTGRES_DB: micros_database
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - name: Prepare for tests
@@ -22,6 +36,7 @@ jobs:
           sleep 5
       - name: Run tests
         run: |
+          DATABASE_URL="postgresql://micros_user:1987@localhost:5432/micros_database"
           pytest ./patients_service/
 
   build-and-push:
