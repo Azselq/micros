@@ -24,8 +24,6 @@ jobs:
           sleep 10
           docker logs patients-service
       - name: Run tests
-        env:
-          DATABASE_URL: "postgresql://micros_user:1987@db/micros_database"
         run: |
           pytest ./appointments_service/
 
