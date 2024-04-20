@@ -1,10 +1,7 @@
 import requests
 import pytest
 
-@pytest.fixture(scope='module')
-def base_url():
-    return "http://localhost:8000"
-
+base_url = "http://localhost:8000/"
 @pytest.fixture(scope='module')
 def test_patient(base_url):
     payload = {"name": "testName", "age": 30}
