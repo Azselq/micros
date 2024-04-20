@@ -44,11 +44,11 @@ jobs:
           sudo apt update
           sudo apt install -y python3-pip
           pip install -r ./patients_service/requirements.txt
-          docker run -p 8000:8000 -e POSTGRES_URL=postgresql://micros_user:1987@localhost:5432/micros_database -d back-tests
+          docker run -p 8000:8000 -e POSTGRES_URL=postgresql://micros_user:1987@postgres:5432/micros_database -d back-tests
 
       - name: Run e2e tests
         run: |
           pytest ./patients_service/
         env:
           BASE_URL: http://localhost:8000
-          POSTGRES_URL: postgresql://micros_user:1987@localhost:5432/micros_database
+          POSTGRES_URL: postgresql://micros_user:1987@postgres:5432/micros_database
