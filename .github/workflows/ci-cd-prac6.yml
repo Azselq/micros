@@ -38,13 +38,6 @@ jobs:
         run: |
           docker-compose ps
 
-      - name: Wait for health check
-        run: |
-          until curl --output /dev/null --silent --head --fail http://0.0.0.0:8000/health; do
-              echo "Waiting for patients-service to be ready..."
-              sleep 5
-          done
-
       - name: Run tests
         run: |
           docker-compose exec patients-service pytest ./tests/
