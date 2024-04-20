@@ -28,7 +28,6 @@ jobs:
         run: |
           sudo docker run -e POSTGRES_PASSWORD=1987 -p 5432:5432 -d postgres:13
           sleep 5
-          alembic upgrade head
           sudo docker run -p 8000:8000 -e "postgresql://micros_user:1987@db/micros_database" -d back-tests
           sleep 10
       
