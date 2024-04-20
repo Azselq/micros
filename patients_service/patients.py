@@ -63,7 +63,7 @@ def read_patient(patient_id: int, db: Session = Depends(get_db)):
 
 router = APIRouter()
 
-@app.get("/external-appointments/{patient_id}", response_model=List[Appointment])
+@app.get("/get/{patient_id}", response_model=List[Appointment])
 async def fetch_appointments_for_patient(patient_id: int = Path()):
     url = "https://bba0qda4f9bhjf2ivkr8.containers.yandexcloud.net/appointments"
     async with httpx.AsyncClient() as client:

@@ -31,11 +31,12 @@ def populate_appointments():
 appointments = []
 populate_appointments()
 
+
 @app.post("/appointments/")
-def create_appointment(patient_id: int, appointment_date: date):
-    appointment = {"patient_id": patient_id, "date": appointment_date}
-    appointments.append(appointment)
-    return appointment
+def create_appointment(appointment: Appointment):
+    new_appointment = appointment.dict()
+    appointments.append(new_appointment)
+    return new_appointment
 
 @app.get("/appointments/{patient_id}", response_model=List[Appointment])
 def get_appointments_by_patient_id(patient_id: int):
