@@ -26,24 +26,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build-and-push
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_USER: micros_user
-          POSTGRES_PASSWORD: 1987
-          POSTGRES_DB: micros_database
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v3
       - name: Prepare e2e tests
         run: |
-          docker build . --file Dockerfile --tag back-tests
+          docker build ./patients_service --file ./patients_service/Dockerfile --tag back-tests
           docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:12
           sleep 5
           docker run -p 8000:80 -e POSTGRES_URL=postgresql://micros_user:1987@localhost:5432/micros_database -d back-tests
 
       - name: Run e2e tests
         run: |
-          pytest ./patients_service/patients_test.py
+          pytest ./patients_service/
