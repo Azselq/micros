@@ -28,6 +28,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     services:
+      app:
+        image: ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+        ports:
+          - 8000:8000
+        env:
+          POSTGRES_URL: postgresql://micros_user:1987@postgres:5432/micros_database
+        options: >-
+          --health-cmd="curl --fail http://localhost:8000/health || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
       postgres:
         image: postgres:12
         env:
@@ -36,30 +47,16 @@ jobs:
           POSTGRES_DB: micros_database
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/checkout@v3
-      - name: Prepare e2e tests
+      - name: Wait for App to be ready
         run: |
-          docker build ./patients_service --file ./patients_service/Dockerfile --tag back-tests
-          docker run --network host -d \
-            -e POSTGRES_URL=postgresql://micros_user:1987@postgres:5432/micros_database \
-            back-tests
-          sleep 5  # Give some additional time for the server to start
-
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pip
-          pip install -r ./patients_service/requirements.txt
-
+          until curl --output /dev/null --silent --head --fail http://localhost:8000/health; do
+            printf '.'
+            sleep 5
+          done
       - name: Run e2e tests
         run: |
           pytest ./patients_service/
         env:
           BASE_URL: http://localhost:8000
-          POSTGRES_URL: postgresql://micros_user:1987@postgres:5432/micros_database
