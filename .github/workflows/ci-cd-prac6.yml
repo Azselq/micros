@@ -40,7 +40,6 @@ jobs:
       - name: Prepare e2e tests
         run: |
           docker build ./patients_service --file ./patients_service/Dockerfile --tag back-tests
-          docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:12
           sleep 5
           sudo apt update
           sudo apt install -y python3-pip
@@ -50,3 +49,5 @@ jobs:
       - name: Run e2e tests
         run: |
           pytest ./patients_service/
+        env:
+          POSTGRES_URL: postgresql://micros_user:1987@localhost:5432/micros_database
