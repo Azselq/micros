@@ -8,7 +8,7 @@ from typing import List
 from datetime import date
 import httpx
 
-DATABASE_URL = "postgresql://micros_user:1987@db/micros_database"
+DATABASE_URL="postgresql://micros_user:1987@host.docker.internal:5432/micros_database"
 
 Base = declarative_base()
 
