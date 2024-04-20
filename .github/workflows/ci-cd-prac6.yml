@@ -23,32 +23,16 @@ jobs:
       - name: Push Docker image to DockerHub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-
-  run-tests:
-    name: Run tests
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:12
-        env:
-          POSTGRES_USER: micros_user
-          POSTGRES_PASSWORD: 1987
-          POSTGRES_DB: micros_database
-        ports:
-          - 5432:5432
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.8'
-      - name: Install Dependencies
+          
+      - name: Prepare e2e tests
         run: |
-          pip install -r ./patients_service/requirements.txt
-      - name: Start application
-        run: |
-          uvicorn patients_service.main:app --host 0.0.0.0 --port 8000 &
-          sleep 10  # Give FastAPI some time to boot
-      - name: Run tests
+          sudo docker stop pg-tests
+          sudo docker run -e POSTGRES_PASSWORD=1987 -p 5432:5432 -d postgres:13
+          sleep 5
+          alembic upgrade head
+          sudo docker run -p 8000:8000 -e "postgresql://micros_user:1987@db/micros_database" -d back-tests
+          sleep 10
+      
+      - name: Run e2e tests
         run: |
           pytest ./patients_service/
