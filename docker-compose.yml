@@ -19,13 +19,5 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://micros_user:1987@db/micros_database
-
-  appointments_service:
-    build: ./appointments_service
-    ports:
-      - "8001:8001"
-    depends_on:
-      - patients_service
-
 volumes:
   postgres_data:
