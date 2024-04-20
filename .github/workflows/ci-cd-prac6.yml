@@ -23,8 +23,6 @@ jobs:
       - name: Push Docker image to DockerHub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-
-jobs:
   test:
     runs-on: ubuntu-latest
     needs: build-and-push
