@@ -8,24 +8,24 @@ on:
   workflow_dispatch:
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v3
-          - name: Prepare for tests
-            run: |
-              sudo apt update
-              sudo apt install -y python3-pip
-              pip install -r ./patients_service/requirements.txt
-              docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-              docker run -p 80:80 -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-              sleep 5
-          - name: Run tests
-            run: |
-              pytest component_test.py
-              pytest integration_test.py
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare for tests
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install -r ./patients_service/requirements.txt
+          docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+          docker run -p 80:80 -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+          sleep 5
+      - name: Run tests
+        run: |
+          pytest component_test.py
+          pytest integration_test.py
 
-    build-and-push:
+  build-and-push:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
