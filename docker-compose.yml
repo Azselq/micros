@@ -18,7 +18,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql://micros_user:1987@db/micros_database
+      DATABASE_URL: postgresql://micros_user:1987@host.docker.internal:5432/micros_database
 
   appointments_service:
     build: ./appointments_service
