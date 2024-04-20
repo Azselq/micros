@@ -22,11 +22,13 @@ class Appointment(BaseModel):
     patient_id: int
     date: date
 
-class PatientSchema(BaseModel):
-    id: int
+class PatientCreate(BaseModel):
     name: str
     age: int
-    
+
+class PatientSchema(PatientCreate):
+    id: int
+
     class Config:
         orm_mode = True
 
@@ -42,18 +44,20 @@ def get_db():
         yield db
     finally:
         db.close()
+        
 @app.post("/patients/", response_model=PatientSchema)
-def create_patient(patient: PatientSchema, db: Session = Depends(get_db)):
+def create_patient(patient: PatientCreate, db: Session = Depends(get_db)):
     db_patient = Patient(name=patient.name, age=patient.age)
     db.add(db_patient)
     db.commit()
     db.refresh(db_patient)
     return db_patient
- 
+
 @app.get("/patients/", response_model=List[PatientSchema])
 def read_patients(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     patients = db.query(Patient).offset(skip).limit(limit).all()
     return patients
+
 @app.get("/patients/{patient_id}", response_model=PatientSchema)
 def read_patient(patient_id: int, db: Session = Depends(get_db)):
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
