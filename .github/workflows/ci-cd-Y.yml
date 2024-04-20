@@ -22,9 +22,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip
-          pip install -r requirements.txt
-      - name: |
+          pip install -r ./appointments_service/requirements.txt
+
+      - name: Run unit tests
+        run: |
           pytest ./appointments_service/
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
