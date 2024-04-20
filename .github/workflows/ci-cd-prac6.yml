@@ -28,11 +28,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: Prepare for tests
         run: |
-          apt-get update
-          apt-get install -y python3-pip
+          sudo apt update
+          sudo apt install -y python3-pip
           pip install -r ./patients_service/requirements.txt
-          docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-          docker run --name patients-service -p 8000:80 -e DATABASE_URL="postgresql://micros_user:1987@postgres:5432/micros_database" -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+          sudo docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+          sudo docker run --name patients-service -p 8000:80 -e DATABASE_URL="postgresql://micros_user:1987@postgres:5432/micros_database" -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
       - name: Check logs
         run: docker logs patients-service
       - name: Run tests
