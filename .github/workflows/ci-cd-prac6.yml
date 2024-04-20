@@ -10,20 +10,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: micros_user
-          POSTGRES_PASSWORD: 1987
-          POSTGRES_DB: micros_database
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U micros_user"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - name: Prepare for tests
@@ -32,9 +18,12 @@ jobs:
           sudo apt install -y python3-pip
           pip install -r ./patients_service/requirements.txt
           sudo docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-          sudo docker run --name patients-service -p 8000:80 -e DATABASE_URL="postgresql://micros_user:1987@postgres:5432/micros_database" -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+          sudo docker run -e POSTGRES_PASSWORD=1987 -p 5432:5432 -d postgres:13
+          sleep 5
+          sudo docker run --name patients-service -p 8000:80 -e DATABASE_URL="postgresql://micros_user:1987@host.docker.internal:5432/micros_database" -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
       - name: Run tests
-        run: pytest ./patients_service/
+        run: |
+          pytest ./appointments_service/
 
   build-and-push:
     needs: [test]
@@ -42,11 +31,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build Docker image
-        run: docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+        run: |
+          docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
       - name: Log in to DockerHub
         uses: docker/login-action@v3.0.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push Docker image to DockerHub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/patients-service:latest

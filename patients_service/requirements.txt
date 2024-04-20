@@ -5,3 +5,8 @@ psycopg2-binary
 requests
 httpx
 pytest
+python-jose
+python-keycloak
+python-multipart
+pyjwt
+starlette-exporter

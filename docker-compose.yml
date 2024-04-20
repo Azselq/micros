@@ -26,6 +26,12 @@ services:
       - "8001:8001"
     depends_on:
       - patients_service
+  prometheus:
+    image: prom/prometheus:v2.20.1
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
 
 volumes:
   postgres_data:
