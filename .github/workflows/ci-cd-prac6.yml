@@ -32,16 +32,17 @@ jobs:
           sudo apt install -y python3-pip
           pip install -r ./patients_service/requirements.txt
           docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-          docker run --name micros-patients-service -p 8000:8000 -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+          docker run --name patients-service -p 8000:8000 -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
           sleep 10  # Giving some time for the server to start
+          docker logs patients-service  # This will log the output of the container startup
           until curl --output /dev/null --silent --head --fail http://localhost:8000/health; do
               echo "Waiting for patients-service to be ready..."
               sleep 5
           done
-
       - name: Run tests
+        env:
+          DATABASE_URL: "postgresql://micros_user:1987@localhost:5432/micros_database"
         run: |
-          DATABASE_URL="postgresql://micros_user:1987@localhost:5432/micros_database"
           pytest ./patients_service/
 
   build-and-push:
