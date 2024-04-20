@@ -4,16 +4,22 @@ from typing import List
 import requests
 import uvicorn
 import os
+from pydantic import BaseModel
 
 app = FastAPI()
 
 patients_data = [
     {"id": 1, "name": "Александр Александрович", "age": 35},
-    {"id": 2, "name": "Александр Александрович", "age": 35},
-    {"id": 3, "name": "Александр Александрович", "age": 35},
+    {"id": 2, "name": "Максим Петрович", "age": 35},
+    {"id": 3, "name": "Ирина Вячеславовна", "age": 35},
     {"id": 4, "name": "Александр Артемович", "age": 23},
     {"id": 5, "name": "Кирилл Максимович", "age": 20}
 ]
+
+class Appointment(BaseModel):
+    patient_id: int
+    date: date
+
 def populate_appointments():
     today = date.today()
     for patient in patients_data:
@@ -21,18 +27,24 @@ def populate_appointments():
             "patient_id": patient["id"],
             "date": today + timedelta(days=patient["id"])
         })
+
 appointments = []
 populate_appointments()
+
 @app.post("/appointments/")
 def create_appointment(patient_id: int, appointment_date: date):
-    response = requests.get(f"http://patients_service:8000/patients/{patient_id}")
-    if response.status_code == 404:
-        raise HTTPException(status_code=404, detail="Patient not found")
     appointment = {"patient_id": patient_id, "date": appointment_date}
     appointments.append(appointment)
     return appointment
 
-@app.get("/")
+@app.get("/appointments/{patient_id}", response_model=List[Appointment])
+def get_appointments_by_patient_id(patient_id: int):
+    filtered_appointments = [appointment for appointment in appointments if appointment["patient_id"] == patient_id]
+    if not filtered_appointments:
+        raise HTTPException(status_code=404, detail="No appointments found for this patient")
+    return filtered_appointments
+
+@app.get("/", response_model=List[Appointment])
 def get_appointments():
     return appointments
 

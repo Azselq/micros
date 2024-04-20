@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import APIRouter, FastAPI, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from pydantic import BaseModel
 from typing import List
+from datetime import date
+import httpx
 
 DATABASE_URL = "postgresql://micros_user:1987@db/micros_database"
 
@@ -15,6 +17,10 @@ class Patient(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     age = Column(Integer)
+
+class Appointment(BaseModel):
+    patient_id: int
+    date: date
 
 class PatientSchema(BaseModel):
     id: int
@@ -55,4 +61,16 @@ def read_patient(patient_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient
 
+router = APIRouter()
 
+@app.get("/external-appointments/{patient_id}", response_model=List[Appointment])
+async def fetch_appointments_for_patient(patient_id: int = Path()):
+    url = "https://bba0qda4f9bhjf2ivkr8.containers.yandexcloud.net/appointments"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url + f"/{patient_id}")
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail="Error fetching external data")
+        all_appointments = response.json()
+        filtered_appointments = [Appointment(**appointment) for appointment in all_appointments if appointment['patient_id'] == patient_id]
+        return filtered_appointments
+app.include_router(router)
