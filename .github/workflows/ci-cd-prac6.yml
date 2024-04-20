@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       db:
-        image: postgres:latest
+        image: postgres:13
         env:
           POSTGRES_USER: micros_user
           POSTGRES_PASSWORD: 1987
@@ -33,15 +33,15 @@ jobs:
           pip install -r ./patients_service/requirements.txt
           docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
           docker run --name patients-service -p 8000:8000 -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-          sleep 10  # Giving some time for the server to start
-          docker logs patients-service  # This will log the output of the container startup
+          sleep 10
+          docker logs patients-service
           until curl --output /dev/null --silent --head --fail http://localhost:8000/health; do
               echo "Waiting for patients-service to be ready..."
               sleep 5
           done
       - name: Run tests
         env:
-          DATABASE_URL: "postgresql://micros_user:1987@localhost:5432/micros_database"
+          DATABASE_URL: "postgresql://micros_user:1987@db/micros_database"
         run: |
           pytest ./patients_service/
 
