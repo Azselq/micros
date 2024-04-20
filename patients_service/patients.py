@@ -44,7 +44,11 @@ def get_db():
         yield db
     finally:
         db.close()
-        
+
+@app.get("/health")
+async def health_check():
+    return {"status": "up"}
+
 @app.post("/patients/", response_model=PatientSchema)
 def create_patient(patient: PatientCreate, db: Session = Depends(get_db)):
     db_patient = Patient(name=patient.name, age=patient.age)
