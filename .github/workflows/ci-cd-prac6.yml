@@ -33,8 +33,6 @@ jobs:
           pip install -r ./patients_service/requirements.txt
           sudo docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
           sudo docker run --name patients-service -p 8000:80 -e DATABASE_URL="postgresql://micros_user:1987@postgres:5432/micros_database" -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
-      - name: Check logs
-        run: docker logs patients-service
       - name: Run tests
         run: pytest ./patients_service/
 
