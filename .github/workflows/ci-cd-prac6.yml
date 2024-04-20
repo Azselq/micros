@@ -20,7 +20,7 @@ jobs:
           sudo docker build ./patients_service --file ./patients_service/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
           sudo docker run -e POSTGRES_PASSWORD=1987 -p 5432:5432 -d postgres:13
           sleep 5
-          sudo docker run --name patients-service -p 8000:8000 -e DATABASE_URL = "postgresql://micros_user:1987@host.docker.internal:5432/micros_database" -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
+          sudo docker run --name patients-service -p 8000:8000 -e DATABASE_URL="postgresql://micros_user:1987@host.docker.internal:5432/micros_database" -d ${{ secrets.DOCKER_USERNAME }}/patients-service:latest
           sleep 10
           docker logs patients-service
       - name: Run tests
