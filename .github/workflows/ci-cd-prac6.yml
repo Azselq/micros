@@ -29,6 +29,7 @@ jobs:
     services:
       postgres:
         image: postgres:12
+        env:
           POSTGRES_USER: micros_user
           POSTGRES_PASSWORD: 1987
           POSTGRES_DB: micros_database
