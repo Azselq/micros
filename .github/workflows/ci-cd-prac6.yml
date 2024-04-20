@@ -36,11 +36,10 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v3
-
       - name: Prepare e2e tests
         run: |
           docker build . --file Dockerfile --tag back-tests
-          docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:14
+          docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:12
           sleep 5
           docker run -p 8000:80 -e POSTGRES_URL=postgresql://micros_user:1987@localhost:5432/micros_database -d back-tests
 
