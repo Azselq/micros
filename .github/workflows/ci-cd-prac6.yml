@@ -40,7 +40,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker-compose exec patients-service pytest ./tests/
+          docker-compose exec patients-service pytest ./patients_service/
 
       - name: Shut down Docker Compose services
         run: |
