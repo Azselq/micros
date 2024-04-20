@@ -22,8 +22,7 @@ jobs:
           sleep 5
       - name: Run tests
         run: |
-          pytest component_test.py
-          pytest integration_test.py
+          pytest ./patients_service/
 
   build-and-push:
     needs: [test]
