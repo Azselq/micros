@@ -44,7 +44,7 @@ jobs:
           python-version: '3.8'
       - name: Install Dependencies
         run: |
-          pip install pytest pytest-asyncio httpx sqlalchemy psycopg2-binary fastapi uvicorn
+          pip install -r ./patients_service/requirements.txt
       - name: Start application
         run: |
           uvicorn patients_service.main:app --host 0.0.0.0 --port 8000 &
