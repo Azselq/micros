@@ -26,7 +26,6 @@ jobs:
           
       - name: Prepare e2e tests
         run: |
-          sudo docker stop pg-tests
           sudo docker run -e POSTGRES_PASSWORD=1987 -p 5432:5432 -d postgres:13
           sleep 5
           alembic upgrade head
